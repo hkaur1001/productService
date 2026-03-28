@@ -4,6 +4,7 @@ import dev.hardeep.productservice.dtos.LoginRequestDto;
 import dev.hardeep.productservice.dtos.RegisterRequestDto;
 import dev.hardeep.productservice.models.User;
 import dev.hardeep.productservice.repositories.UserRepository;
+import dev.hardeep.productservice.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,9 @@ import java.util.Optional;
 public class AuthServiceImpl implements AuthService{
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    JwtUtil jwtUtil;
 
     @Override
     public User register(RegisterRequestDto requestDto) {
@@ -29,7 +33,7 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
-    public User login(LoginRequestDto requestDto) {
+    public String login(LoginRequestDto requestDto) {
         Optional<User> optionalUser = userRepository.findByEmail(requestDto.getEmail());
         if(!optionalUser.isPresent())
             throw new RuntimeException("User not found");
@@ -38,6 +42,6 @@ public class AuthServiceImpl implements AuthService{
         if(!user.getPassword().equals(requestDto.getPassword()))
             throw new RuntimeException("Invalid Password");
 
-        return user;
+        return jwtUtil.generateToken(user.getEmail());
     }
 }

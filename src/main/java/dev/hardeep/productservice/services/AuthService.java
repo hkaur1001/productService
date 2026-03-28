@@ -7,5 +7,5 @@ import dev.hardeep.productservice.models.User;
 public interface AuthService {
 
     User register(RegisterRequestDto requestDto);
-    User login(LoginRequestDto requestDto);
+    String login(LoginRequestDto requestDto);
 }
