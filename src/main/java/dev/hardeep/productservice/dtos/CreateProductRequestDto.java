@@ -1,5 +1,8 @@
 package dev.hardeep.productservice.dtos;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,11 +11,21 @@ import lombok.Setter;
 public class CreateProductRequestDto {
 
     private Long id;
+
+    @NotBlank
     private String title;
+
     private String image;
     private String description;
+
+    @NotBlank
     private String category;
+
+    @Positive
     private double price;
+
+    @Min(0)
+    private Integer quantity;
 
 
 

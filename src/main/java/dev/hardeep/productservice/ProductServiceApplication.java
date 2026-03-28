@@ -1,9 +1,5 @@
 package dev.hardeep.productservice;
 
-import dev.hardeep.productservice.controllers.ProductController;
-import dev.hardeep.productservice.models.Product;
-import dev.hardeep.productservice.services.FakeStoreProductService;
-import dev.hardeep.productservice.services.ProductService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

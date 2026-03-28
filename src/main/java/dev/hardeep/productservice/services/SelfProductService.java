@@ -1,10 +1,14 @@
 package dev.hardeep.productservice.services;
 
+import dev.hardeep.productservice.dtos.CreateProductRequestDto;
 import dev.hardeep.productservice.exceptions.ProductNotFoundException;
 import dev.hardeep.productservice.models.Category;
 import dev.hardeep.productservice.models.Product;
 import dev.hardeep.productservice.repositories.CategoryRepository;
 import dev.hardeep.productservice.repositories.ProductRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,9 +20,10 @@ public class SelfProductService implements ProductService{
     private CategoryRepository categoryRepository;
 
 
-
-    public SelfProductService(ProductRepository productRepository){
+    //constructor injection 
+    public SelfProductService(ProductRepository productRepository, CategoryRepository categoryRepository){
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
     }
     @Override
     public Product getSingleProduct(Long productId) throws ProductNotFoundException {
@@ -32,29 +37,29 @@ public class SelfProductService implements ProductService{
     }
 
     @Override
-    public List<Product> getProducts() {
-        return productRepository.findAll();
+    public Page<Product> getProducts(int page, int size, String sortBy) {
+        return productRepository.findAll(PageRequest.of(page, size, Sort.by(sortBy)));
     }
 
     @Override
-    public Product createProduct(String title, String description, String category, double price, String image) {
+    public Product createProduct(CreateProductRequestDto requestDto) {
 
         Product product = new Product();
-        product.setTitle(title);
-        product.setDescription(description);
-        product.setPrice(price);
-        product.setImageUrl(image);
+        product.setTitle(requestDto.getTitle());
+        product.setDescription(requestDto.getDescription());
+        product.setPrice(requestDto.getPrice());
+        product.setImageUrl(requestDto.getImage());
+        product.setQuantity(requestDto.getQuantity() != null ? requestDto.getQuantity() : 10);
 
 
-        Category categoryFromDataBase = categoryRepository.findByTitle(category);
+        Category categoryFromDataBase = categoryRepository.findByTitle(requestDto.getCategory());
         if(categoryFromDataBase == null){
             Category newCategory = new Category();
-            newCategory.setTitle(title);
+            newCategory.setTitle(requestDto.getCategory());
             categoryFromDataBase = newCategory;
         }
         product.setCategory(categoryFromDataBase);
-        Product savedProduct = productRepository.save(product);
-        return savedProduct;
+        return productRepository.save(product);
     }
 
     @Override

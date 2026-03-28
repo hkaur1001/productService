@@ -1,13 +1,12 @@
 package dev.hardeep.productservice.controllers;
 
 import dev.hardeep.productservice.dtos.CreateProductRequestDto;
-import dev.hardeep.productservice.dtos.ErrorDto;
 import dev.hardeep.productservice.exceptions.ProductNotFoundException;
-import dev.hardeep.productservice.models.Category;
 import dev.hardeep.productservice.models.Product;
-import dev.hardeep.productservice.services.FakeStoreProductService;
 import dev.hardeep.productservice.services.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,13 +25,9 @@ public class ProductController {
     //POST  /products
     //Create product
     @PostMapping("/products")
-    public Product createProduct(@RequestBody CreateProductRequestDto requestDto){
+    public Product createProduct(@Valid @RequestBody CreateProductRequestDto requestDto){
 
-         return productService.createProduct(requestDto.getTitle(),
-                requestDto.getDescription(),
-                requestDto.getCategory(),
-                requestDto.getPrice(),
-                requestDto.getImage());
+         return productService.createProduct(requestDto);
         //there is no Confidential Parameter in product , so we can return product,
         // return Dto if there is some Confidential Parameter
     }
@@ -58,10 +53,9 @@ public class ProductController {
 
     //get all products
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getAllProducts(){
-             List<Product> products = productService.getProducts();
-             ResponseEntity<List<Product>> response= new ResponseEntity<>(products, HttpStatus.OK);
-             return response;
+    public Page<Product> getAllProducts(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "id") String sortBy){
+             return productService.getProducts(page, size, sortBy);
+             //ResponseEntity<List<Product>> response= new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @PutMapping("/products/{id}")
